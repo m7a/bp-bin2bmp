@@ -1,0 +1,187 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+copyright = """
+Modification notice:
+
+	This is a modified version of the original script.
+	This modification took place in 2012 by the Ma_Sys.ma.
+	For further info send an e-mail to Ma_Sys.ma@web.de.
+
+	Small changelist
+	 * Removed JPG and BMP support
+	 * Changed the programs' structure
+	 * Added TGA support
+	 * Wrote a function to restore original data from images
+	   created by this program.
+	 * Marked "monochrome" option as not implemented because
+	   it did not work on the test system
+
+	bin2bmp.py, modified 0.1.6.4 -- a small program to convert 
+	binary data to bitmaps for graphical analysis
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+Original copyright notice:
+
+	bin2bmp.py 0.1.6.4 Copyright (C) 2009 Bryan Harris
+
+	bin2bmp.py is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	bin2bmp.py is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with bin2bmp.py; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+"""
+
+import Image, os, sys, array, getopt, struct
+
+class bin2bmp:
+
+	output_file = None
+	input_file = None
+	output_type = "PNG"
+	width = 1200
+	bpp = 24
+	create = True
+	filename = None
+	monochrome = False
+
+	def usage(self, filename):
+		print "\nUsage:", filename, "options followed by values (if required)\n"
+		print " -i, --input       [file]    Input filename (required)"
+		print " -w, --width       [pixels]  Width of output image (default is " + str(self.width) + ")"
+		print " -o, --output      [file]    Output filename (default is input_filename.png)"
+		print " -d, --depth       [bits]    Set color depth (24 default, 32 also possible)"
+		print " -v, --version               Display version and license information"
+		print " -m, --monochrome            Set to one bit per pixel mode (black and white)"
+		print " -r, --restore               Restore input file a to binary file"
+		print " -t, --tga                   Write TGA instead of PNG images\n"
+		print "Example:", filename, "-i test.bin -o test.tga -t\n"
+		exit(1)
+
+	def parse_args(self, argv):
+		try:
+			(opts, args) = getopt.getopt(argv[1:], "w:ho:i:mvrtd:", 
+				["width=", "help", "output=", "input=", "monochrome", "version", "restore", "tga", "depth="])
+		except getopt.GetoptError, err:
+			print "Unable to parse arguments:", str(err)
+			self.usage(argv[0])
+
+		for (o, a) in opts:
+			if o in ("-v", "--version"):
+				print copyright
+				exit(0)
+			elif o in ("-w", "--width"):
+				try:
+					self.width = int(a)
+				except:
+					print a, "is not an integer!"
+					self.usage(argv[0])
+			elif o in ("-h", "--help"): self.usage(argv[0])
+			elif o in ("-o", "--output"): self.output_file = a
+			elif o in ("-i", "--input"): self.input_file = a
+			elif o in ("-t", "--tga"): self.output_type = "TGA"
+			elif o in ("-m", "--monochrome"): self.monochrome = True # TODO IMPLEMENT
+			elif o in ("-d", "--depth"): self.bpp = int(a)
+			elif o in ("-r", "--restore"): self.create = False
+			else: 
+				print "Invalid arguments given"
+				self.usage(argv[0])
+
+		if self.input_file == None:
+			print "No input filename specified."
+			self.usage(argv[0])
+
+		self.filename = os.path.split(self.input_file)[1]
+
+	def create_image(self):
+		try:
+			fileobj = open(self.input_file, "rb")
+		except:
+			print "Can't open " + sys.argv[1] + " for some reason."
+			exit(2)
+		try:
+			#TODO Make this work for bigger files...
+			buf = array.array("B", fileobj.read())
+			buf.reverse()
+		except:
+			print "Could not read file into buffer. File size too big?"
+			exit(2)
+
+		output_ext = self.output_type.lower()
+
+		if self.monochrome == False:
+			white = (255, 255, 255)
+		else:
+			print "Monochrome not implemented yet."
+			exit(3)
+			#white = 1
+
+		chunks = (len(buf) * 8) / self.bpp
+		if chunks % self.width == 0:
+			height = chunks / self.width
+		else:
+			height = chunks / self.width + 1
+
+		img = Image.new("RGB", (self.width, height), white)
+
+		for i in range(chunks - 1):
+			x = i % self.width
+			y = i / self.width
+
+			color = (buf.pop(), buf.pop(), buf.pop())
+
+			#TODO Does not work correctly... ?
+			#if i % 8 == 0:
+			#	color_byte = buf.pop()
+			#	color = 1 - (color_byte >> (7 - i) % 8 & 1)
+
+			img.putpixel((x, y), color)
+
+		if self.output_file == None:
+			self.output_file = self.filename + "." + output_ext
+
+		img.save(self.output_file, self.output_type)
+
+	def restore_from_image(self):
+		"""Restore a binary file from an image"""
+
+		if self.output_file == None:
+			self.output_file = self.filename + ".bin"
+
+		img = Image.open(self.input_file)
+		data = img.getdata()
+		buf = file(self.output_file, "wb")
+
+		for i in data:
+			buf.write(struct.pack("BBB", i[0], i[1], i[2]))
+
+		buf.close()
+
+if __name__ == '__main__' :
+	obj = bin2bmp()
+	obj.parse_args(sys.argv)
+	if obj.create == True:
+		obj.create_image()
+	else:
+		obj.restore_from_image()
+

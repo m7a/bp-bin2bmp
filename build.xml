@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="build">
+
+<!-- APPLICATION METADATA -->
+<property name="mdpc.name"      value="mdvl-bin2bmp"/>
+<property name="mdpc.section"   value="graphics"/>
+<property name="mdpc.arch"      value="all"/>
+<property name="mdpc.descrs"
+	>Convert binary files to bitmaps for visual inspection</property>
+<property name="mdpc.depends"   value="python"/>
+<property name="mdpc.conflicts" value="mdvl-scripts (&lt;= 1.0.385)"/>
+<property name="mdpc.descrl">
+ Provides a Python script to convert arbitrary files to bitmap images by
+ encoding the binary data in the pixel values. This can be used for visual
+ inspection of small and medium-sized (up to a few megabytes) files.
+ .
+ Additionally, it is possible to reverse the encoding.
+</property>
+
+<property name="mdpc.copyright.file"><![CDATA[
+License: GPL-3+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+License-Reference: /usr/share/common-licenses/GPL-3
+
+Files: README.md build.xml debian-changelog.txt
+Copyright: Copyright (c) 2020 Ma_Sys.ma <Ma_Sys.ma@web.de>
+License: GPL-3+
+
+Files: bin2bmp
+Copyright:
+ Copyright (C) 2009 Bryan Harris
+ Copyright (c) 2012 Ma_Sys.ma <Ma_Sys.ma@web.de>
+License: GPL-3+
+]]></property>
+
+<property name="mdpc.file.install">
+bin2bmp /usr/bin
+</property>
+
+<!-- CI INTEGRATION -->
+<target name="package_triggered" depends="package">
+	<property name="masysma.ci.trigger" value="newver"/>
+</target>
+
+<!-- CONSTANT TPL IMPORT -->
+<property environment="env"/>
+<condition property="masysma.internal.includepath.rel" value="${env.MDVL_CI_PHOENIX_ROOT}" else=".."><isset property="env.MDVL_CI_PHOENIX_ROOT"/></condition>
+<property name="masysma.internal.includepath" location="${masysma.internal.includepath.rel}"/>
+<property name="masysma.internal.loadpath" value="${masysma.internal.includepath}/co-build/ant-build-template.xml"/>
+<condition property="masysma.internal.load" value="file://${masysma.internal.loadpath}" else="https://raw.githubusercontent.com/m7a/co-build/master/ant-build-template.xml"><resourceexists><file file="${masysma.internal.loadpath}"/></resourceexists></condition>
+<import><url url="${masysma.internal.load}"/></import>
+
+</project>

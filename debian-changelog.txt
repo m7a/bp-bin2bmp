@@ -1,0 +1,6 @@
+mdvl-bin2bmp (1.0.0) stable; urgency=medium
+
+  * Package created with MDPC 2.
+    Split off legacy mdvl-scripts v. 1.0.385.
+
+ -- Linux-Fan, Ma_Sys.ma <Ma_Sys.ma@web.de>  Wed, 23 Dec 2020 00:05:28 +0100
