@@ -7,14 +7,17 @@
 <property name="mdpc.arch"      value="all"/>
 <property name="mdpc.descrs"
 	>Convert binary files to bitmaps for visual inspection</property>
-<property name="mdpc.depends"   value="python"/>
+<property name="mdpc.depends"
+	>python3-pil | python-pil, python3 | python</property>
 <property name="mdpc.conflicts" value="mdvl-scripts (&lt;= 1.0.385)"/>
 <property name="mdpc.descrl">
  Provides a Python script to convert arbitrary files to bitmap images by
  encoding the binary data in the pixel values. This can be used for visual
  inspection of small and medium-sized (up to a few megabytes) files.
- .
  Additionally, it is possible to reverse the encoding.
+ .
+ This variant of the script is intended to work with Python 2 as well as
+ Python 3.
 </property>
 
 <property name="mdpc.copyright.file"><![CDATA[
@@ -40,7 +43,7 @@ License: GPL-3+
 Files: bin2bmp
 Copyright:
  Copyright (C) 2009 Bryan Harris
- Copyright (c) 2012 Ma_Sys.ma <Ma_Sys.ma@web.de>
+ Copyright (c) 2012, 2020 Ma_Sys.ma <Ma_Sys.ma@web.de>
 License: GPL-3+
 ]]></property>
 
