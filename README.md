@@ -83,5 +83,7 @@ Bugs
 See Also
 ========
 
+ * An older version of the bin2bmp source code is available on Pastebin:
+   <https://pastebin.com/8W1jA1r9>
  * [BinVis](https://binvis.io)
    ([Source](https://github.com/cortesi/scurve/blob/master/binvis))
