@@ -7,7 +7,7 @@ lang: en-US
 author: ["Linux-Fan, Ma_Sys.ma (Ma_Sys.ma@web.de)"]
 keywords: ["mdvl", "python", "script", "binary", "image", "bitmap"]
 x-masysma-version: 1.0.0
-x-masysma-website: https://masysma.lima-city.de/11/bin2bmp.xhtml
+x-masysma-website: https://masysma.net/11/bin2bmp.xhtml
 x-masysma-repository: https://www.github.com/m7a/bp-bin2bmp
 x-masysma-owned: 1
 x-masysma-copyright: |
